@@ -150,7 +150,7 @@ if [ ! -d "$ROS2_SRC/yolov8_ros" ]; then
 else
     cd $ROS2_SRC/yolov8_ros && git pull origin main
 fi
-cd $ROS2_WS && rosdep init && rosdep install --from-paths src --ignore-src -r -y
+# cd $ROS2_WS && rosdep init && rosdep install --from-paths src --ignore-src -r -y
 
 cd $ROS2_WS && colcon build
 

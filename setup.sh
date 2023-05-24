@@ -152,6 +152,6 @@ else
 fi
 # cd $ROS2_WS && rosdep init && rosdep install --from-paths src --ignore-src -r -y
 
-cd $ROS2_WS && colcon build --symlink-install
+cd $ROS2_WS && colcon build
 
 cd $DEV_DIR

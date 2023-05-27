@@ -2,7 +2,8 @@ import os
 import sys
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.conditions import IfCondition
 
 def generate_launch_description():
 
@@ -35,27 +36,34 @@ def generate_launch_description():
         description="Baudrate of the serial port"
     )
 
-    if (interface == 'udp'):
-        xrce_agent_process = ExecuteProcess(
-                cmd=[[
-                    'MicroXRCEAgent udp4 -p ',
-                    port
-                ]],
-                shell=True
-        )
-    elif (interface == 'serial'):
-        xrce_agent_process = ExecuteProcess(
-                cmd=[[
-                    'MicroXRCEAgent serial --dev  ',
-                    device,
-                    ' -b ',
-                    baud
-                ]],
-                shell=True
-        )
-    else:
-        print("Interface {} is not supported".format(interface))
-        exit()
+    xrce_agent_process_udp = ExecuteProcess(
+            condition=IfCondition(
+                PythonExpression([
+                    interface,
+                    " == 'udp'"
+                ])
+            ),
+            cmd=[[
+                'MicroXRCEAgent udp4 -p ',
+                port
+            ]],
+            shell=True
+    )
+    xrce_agent_process_serial = ExecuteProcess(
+        condition=IfCondition(
+                PythonExpression([
+                    interface,
+                    " == 'serial'"
+                ])
+            ),
+            cmd=[[
+                'MicroXRCEAgent serial --dev  ',
+                device,
+                ' -b ',
+                baud
+            ]],
+            shell=True
+    )
 
     ld = LaunchDescription()
 
@@ -63,6 +71,7 @@ def generate_launch_description():
     ld.add_action(interface_launch_arg)
     ld.add_action(device_launch_arg)
     ld.add_action(baud_launch_arg)
-    ld.add_action(xrce_agent_process)
+    ld.add_action(xrce_agent_process_udp)
+    ld.add_action(xrce_agent_process_serial)
 
     return ld

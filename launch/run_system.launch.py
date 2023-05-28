@@ -13,7 +13,7 @@ from math import radians
 def generate_launch_description():
     ld = LaunchDescription()
 
-    ns='interceptor'
+    ns=''
 
 
     # MicroXRCEAgent
@@ -31,21 +31,21 @@ def generate_launch_description():
         }.items()
     )
 
-    enu_frame= {'odom_frame' : 'odom'}
-    base_link= {'baselink_frame' : 'px4_base_link'}
-    tf_period= {'tf_pub_period' : 0.02}
-    publish_tf= {'publish_tf' : True}
-    ## TODO Need to add parameter to enable/disable tf
-    ## This is important to avoid conflicts with the TF published by the SLAM system
-    ##  
-    px4_ros_node = Node(
-        package='px4_ros_com',
-        executable='px4_ros',
-        output='screen',
-        name=ns+'_px4_ros_com',
-        namespace=ns,
-        parameters=[publish_tf, tf_period, enu_frame, base_link],
-        remappings=[('vio/ros_odom', 'vio/ros_odom')]
+    
+    px4_ros_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('px4_ros_com'),
+                'launch/px4_ros_tf.launch'
+            ])
+        ]),
+        launch_arguments={
+            'ns': '',
+            'odom_frame': 'odom',
+            'base_link' : 'px4_base_link',
+            'tf_period' : '0.02',
+            'publish_tf': 'True'
+        }.items()
     )
 
     # Static TF base_link -> depth_camera
@@ -58,7 +58,7 @@ def generate_launch_description():
     cam_yaw = radians(-90.0)
     cam_tf_node = Node(
         package='tf2_ros',
-        name=ns+'_base2depth_tf_node',
+        name=ns+'/base2depth_tf_node',
         executable='static_transform_publisher',
         # arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/'+base_link['child_frame'], ns+'/depth_camera'],
         arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/base_link', 'camera_link'],
@@ -133,9 +133,9 @@ def generate_launch_description():
     ld.add_action(cam_tf_node)
     ld.add_action(xrce_agent_launch)
     ld.add_action(kf_launch)
-    ld.add_action(px4_ros_node)
     ld.add_action(predictor_launch)
     ld.add_action(yolov8_launch)
     ld.add_action(yolo2pose_launch)
+    ld.add_action(px4_ros_launch)
 
     return ld

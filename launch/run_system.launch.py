@@ -31,27 +31,28 @@ def generate_launch_description():
         }.items()
     )
 
-    enu_frame= {'odom_frame' : 'local_pose_ENU'}
-    base_link= {'baselink_frame' : 'base_link'}
+    enu_frame= {'odom_frame' : 'odom'}
+    base_link= {'baselink_frame' : 'px4_base_link'}
     tf_period= {'tf_pub_period' : 0.02}
+    publish_tf= {'publish_tf' : True}
     ## TODO Need to add parameter to enable/disable tf
     ## This is important to avoid conflicts with the TF published by the SLAM system
     ##  
-    # px4_ros_node = Node(
-    #     package='px4_ros_com',
-    #     executable='px4_ros',
-    #     output='screen',
-    #     name=ns+'_px4_ros_com',
-    #     namespace=ns,
-    #     parameters=[enu_frame, base_link, tf_period],
-    #     remappings=[('vio/ros_odom', 'vio/ros_odom')]
-    # )
+    px4_ros_node = Node(
+        package='px4_ros_com',
+        executable='px4_ros',
+        output='screen',
+        name=ns+'_px4_ros_com',
+        namespace=ns,
+        parameters=[publish_tf, tf_period, enu_frame, base_link],
+        remappings=[('vio/ros_odom', 'vio/ros_odom')]
+    )
 
     # Static TF base_link -> depth_camera
     # .15 0 .25 0 0 1.5707
-    cam_x = 0.15
+    cam_x = 0.1
     cam_y = 0.0
-    cam_z = 0.25
+    cam_z = 0.0
     cam_roll = radians(-90.0)
     cam_pitch = 0.0
     cam_yaw = radians(-90.0)
@@ -60,7 +61,7 @@ def generate_launch_description():
         name=ns+'_base2depth_tf_node',
         executable='static_transform_publisher',
         # arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/'+base_link['child_frame'], ns+'/depth_camera'],
-        arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/'+base_link['baselink_frame'], 'x500_d435_1/link/realsense_d435'],
+        arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/base_link', 'camera_link'],
         
     )
 
@@ -132,7 +133,7 @@ def generate_launch_description():
     ld.add_action(cam_tf_node)
     ld.add_action(xrce_agent_launch)
     ld.add_action(kf_launch)
-    # ld.add_action(px4_ros_node)
+    ld.add_action(px4_ros_node)
     ld.add_action(predictor_launch)
     ld.add_action(yolov8_launch)
     ld.add_action(yolo2pose_launch)

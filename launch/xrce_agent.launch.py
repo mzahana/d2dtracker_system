@@ -3,7 +3,7 @@ import sys
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, LaunchConfigurationEquals
 
 def generate_launch_description():
 
@@ -37,12 +37,7 @@ def generate_launch_description():
     )
 
     xrce_agent_process_udp = ExecuteProcess(
-            condition=IfCondition(
-                PythonExpression([
-                    interface,
-                    " == 'udp'"
-                ])
-            ),
+            condition=LaunchConfigurationEquals('interface', 'udp'),
             cmd=[[
                 'MicroXRCEAgent udp4 -p ',
                 port
@@ -50,14 +45,9 @@ def generate_launch_description():
             shell=True
     )
     xrce_agent_process_serial = ExecuteProcess(
-        condition=IfCondition(
-                PythonExpression([
-                    interface,
-                    " == 'serial'"
-                ])
-            ),
+        condition=LaunchConfigurationEquals('interface', 'serial'),
             cmd=[[
-                'MicroXRCEAgent serial --dev  ',
+                'sudo MicroXRCEAgent serial --dev  ',
                 device,
                 ' -b ',
                 baud

@@ -33,6 +33,7 @@ def generate_launch_description():
                 'enable_infra2': True,
                 'enable_color': True,
                 'enable_depth': True,
+                'depth_module.emitter_enabled': 0,
                 'rgb_camera.profile': '640x360x30', 
                 'depth_module.profile': '640x360x90',
                 'enable_gyro': True,

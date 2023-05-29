@@ -32,7 +32,6 @@ def generate_launch_description():
     )
 
     # isaac_visula_slam + realsense
-    # MicroXRCEAgent
     slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -47,7 +46,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
                 FindPackageShare('px4_ros_com'),
-                'launch/px4_ros_tf.launch'
+                'launch/px4_ros_tf.launch.py'
             ])
         ]),
         launch_arguments={
@@ -69,7 +68,7 @@ def generate_launch_description():
     cam_yaw = radians(-90.0)
     cam_tf_node = Node(
         package='tf2_ros',
-        name=ns+'/base2depth_tf_node',
+        name='base2depth_tf_node',
         executable='static_transform_publisher',
         # arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/'+base_link['child_frame'], ns+'/depth_camera'],
         arguments=[str(cam_x), str(cam_y), str(cam_z), str(cam_yaw), str(cam_pitch), str(cam_roll), ns+'/base_link', 'camera_link'],
@@ -106,6 +105,10 @@ def generate_launch_description():
     )
     
     # yolov8_ros
+    package_name = 'd2dtracker_drone_detector'
+    file_name = 'drone_detection_v3.pt'
+    package_share_directory = get_package_share_directory(package_name)
+    file_path = os.path.join(package_share_directory, file_name)
     yolov8_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -114,7 +117,7 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'model': '/home/user/shared_volume/ros2_ws/src/d2dtracker_drone_detector/config/drone_detection_v3.pt',
+            'model': file_path,
             'threshold' : '0.5',
             'input_image_topic' : '/camera/color/image_raw',
             'device': 'cuda:0'
@@ -148,5 +151,6 @@ def generate_launch_description():
     ld.add_action(yolov8_launch)
     ld.add_action(yolo2pose_launch)
     ld.add_action(px4_ros_launch)
+    ld.add_action(slam_launch)
 
     return ld

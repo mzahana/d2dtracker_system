@@ -31,6 +31,17 @@ def generate_launch_description():
         }.items()
     )
 
+    # isaac_visula_slam + realsense
+    # MicroXRCEAgent
+    slam_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('d2dtracker_system'),
+                'slam_realsense.launch.py'
+            ])
+        ])
+    )
+
     
     px4_ros_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -105,7 +116,7 @@ def generate_launch_description():
         launch_arguments={
             'model': '/home/user/shared_volume/ros2_ws/src/d2dtracker_drone_detector/config/drone_detection_v3.pt',
             'threshold' : '0.5',
-            'input_image_topic' : '/interceptor/image',
+            'input_image_topic' : '/camera/color/image_raw',
             'device': 'cuda:0'
         }.items()
     )
@@ -119,9 +130,9 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'depth_topic': 'interceptor/depth_image',
+            'depth_topic': '/camera/aligned_depth_to_color/image_raw',
             'debug' : 'false',
-            'caminfo_topic' : 'interceptor/camera_info',
+            'caminfo_topic' : '/camera/aligned_depth_to_color/camera_info',
             'detections_poses_topic': 'yolo_detections_poses',
             'yolo_detections_topic': 'detections',
             'detector_ns' : '',

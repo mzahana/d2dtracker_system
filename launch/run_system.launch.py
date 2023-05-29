@@ -54,7 +54,8 @@ def generate_launch_description():
             'odom_frame': 'odom',
             'base_link' : 'px4_base_link',
             'tf_period' : '0.02',
-            'publish_tf': 'True'
+            'publish_tf': 'True',
+            'vio_topic' : 'vio/ros_odom'
         }.items()
     )
 

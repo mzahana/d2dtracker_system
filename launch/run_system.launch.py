@@ -2,12 +2,13 @@
 
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch_ros.actions import Node
 from ament_index_python import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
+from launch.conditions import IfCondition, LaunchConfigurationEquals
 from math import radians
 
 def generate_launch_description():
@@ -17,6 +18,11 @@ def generate_launch_description():
 
 
     # MicroXRCEAgent
+    run_xrce = LaunchConfiguration('run_xrce')
+    run_xrce_launch_arg = DeclareLaunchArgument(
+        'run_xrce',
+        default_value=os.environ.get('RUN_XRCE', 'True'),
+    )
     xrce_agent_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -28,20 +34,49 @@ def generate_launch_description():
             'interface': 'serial',
             'device': '/dev/ttyUSB0',
             'baud': '921600'
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_xrce', 'True')
     )
 
-    # isaac_visula_slam + realsense
+    # Realsense
+    run_rs = LaunchConfiguration('run_rs')
+    run_rs_launch_arg = DeclareLaunchArgument(
+        'run_rs',
+        default_value=os.environ.get('RUN_REALSENSE', 'True'),
+    )
+    
+    realsense_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('d2dtracker_system'),
+                'realsense.launch.py'
+            ])
+        ]),
+        condition=LaunchConfigurationEquals('run_rs', 'True')
+    )
+
+    # isaac_visual_slam + realsense
+    run_slam = LaunchConfiguration('run_slam')
+    run_slam_launch_arg = DeclareLaunchArgument(
+        'run_slam',
+        default_value=os.environ.get('RUN_SLAM', 'False'),
+    )
     slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
                 FindPackageShare('d2dtracker_system'),
                 'slam_realsense.launch.py'
             ])
-        ])
+        ]),
+        condition=LaunchConfigurationEquals('run_slam', 'True')
     )
 
     
+    run_px4_ros = LaunchConfiguration('run_px4_ros')
+    run_px4_launch_arg = DeclareLaunchArgument(
+        'run_px4_ros',
+        default_value=os.environ.get('RUN_PX4_ROS', 'True'),
+    )
     px4_ros_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -56,7 +91,8 @@ def generate_launch_description():
             'tf_period' : '0.02',
             'publish_tf': 'True',
             'vio_topic' : '/visual_slam/tracking/odometry'
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_px4_ros', 'True')
     )
 
     # Static TF base_link -> depth_camera
@@ -77,6 +113,11 @@ def generate_launch_description():
     )
 
     # Kalman filter
+    run_kf = LaunchConfiguration('run_kf')
+    run_kf_launch_arg = DeclareLaunchArgument(
+        'run_kf',
+        default_value=os.environ.get('RUN_KF', 'True'),
+    )
     kf_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -87,10 +128,16 @@ def generate_launch_description():
         launch_arguments={
             'detections_topic': 'yolo_detections_poses',
             'kf_ns' : ''
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_kf', 'True')
     )
 
     # Trajectory prediction
+    run_traj_pred = LaunchConfiguration('run_traj_pred')
+    run_traj_pred_launch_arg = DeclareLaunchArgument(
+        'run_traj_pred',
+        default_value=os.environ.get('RUN_TRAJ_PRED', 'True'),
+    )
     predictor_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -102,10 +149,16 @@ def generate_launch_description():
             'kf_topic': 'kf/good_tracks',
             'namespace' : '',
             'log_level' : 'info'
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_traj_pred', 'True')
     )
     
     # yolov8_ros
+    run_yolo = LaunchConfiguration('run_yolo')
+    run_yolo_launch_arg = DeclareLaunchArgument(
+        'run_yolo',
+        default_value=os.environ.get('RUN_YOLO', 'True'),
+    )
     package_name = 'd2dtracker_drone_detector'
     file_name = 'drone_detection_v3.pt'
     package_share_directory = get_package_share_directory(package_name)
@@ -122,10 +175,16 @@ def generate_launch_description():
             'threshold' : '0.5',
             'input_image_topic' : '/camera/color/image_raw',
             'device': 'cuda:0'
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_yolo', 'True')
     )
 
     # Yolo to pose node
+    run_yolo_pose = LaunchConfiguration('run_yolo_pose')
+    run_yolo_pose_launch_arg = DeclareLaunchArgument(
+        'run_yolo_pose',
+        default_value=os.environ.get('RUN_YOLO_POSE', 'True'),
+    )
     yolo2pose_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -141,10 +200,20 @@ def generate_launch_description():
             'yolo_detections_topic': 'detections',
             'detector_ns' : '',
             'reference_frame' : 'map'
-        }.items()
+        }.items(),
+        condition=LaunchConfigurationEquals('run_yolo_pose', 'True')
     )
 
 
+    ld.add_action(run_rs_launch_arg)
+    ld.add_action(run_xrce_launch_arg)
+    ld.add_action(run_slam_launch_arg)
+    ld.add_action(run_px4_launch_arg)
+    ld.add_action(run_kf_launch_arg)
+    ld.add_action(run_traj_pred_launch_arg)
+    ld.add_action(run_yolo_launch_arg)
+    ld.add_action(run_yolo_pose_launch_arg)
+    ld.add_action(realsense_launch)
     ld.add_action(cam_tf_node)
     ld.add_action(xrce_agent_launch)
     ld.add_action(kf_launch)

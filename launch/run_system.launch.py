@@ -197,7 +197,7 @@ def generate_launch_description():
             'debug' : 'false',
             'caminfo_topic' : '/camera/aligned_depth_to_color/camera_info',
             'detections_poses_topic': 'yolo_detections_poses',
-            'yolo_detections_topic': 'detections',
+            'yolo_detections_topic': 'yolo/detections',
             'detector_ns' : '',
             'reference_frame' : 'map'
         }.items(),

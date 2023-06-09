@@ -164,6 +164,22 @@ else
 fi
 # cd $ROS2_WS && rosdep init && rosdep install --from-paths src --ignore-src -r -y
 
+#
+# arducam_ros2
+#
+PKG_URL=''
+if [[ -n "$GIT_USER" ]] && [[ -n "$GIT_TOKEN" ]]; then
+    PKG_URL=https://$GIT_USER:$GIT_TOKEN@github.com/mzahana/arducam_ros2.git
+else
+    PKG_URL=https://github.com/mzahana/arducam_ros2.git
+fi
+if [ ! -d "$ROS2_SRC/arducam_ros2" ]; then
+    cd $ROS2_SRC
+    git clone ${PKG_URL}
+else
+    cd $ROS2_SRC/arducam_ros2 && git pull origin main
+fi
+
 cd $ROS2_WS && colcon build
 
 cd $DEV_DIR

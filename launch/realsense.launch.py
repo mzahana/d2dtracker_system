@@ -18,8 +18,8 @@ def generate_launch_description():
                 'depth_module.emitter_enabled': 0,
                 'rgb_camera.profile': '640x480x30', 
                 'depth_module.profile': '640x480x30',
-                'enable_gyro': False,
-                'enable_accel': False,
+                'enable_gyro': True,
+                'enable_accel': True,
                 'gyro_fps': 200,
                 'accel_fps': 200,
                 'unite_imu_method': 2

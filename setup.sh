@@ -27,13 +27,13 @@ fi
 #
 # Clone realsense-ros 4.51.1
 #
-if [ ! -d "$ROS2_SRC/realsense-ros" ]; then
-    cd $ROS2_SRC
-    git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.51.1
-else
-    cd $ROS2_SRC/realsense-ros
-    git checkout 4.51.1
-fi
+# if [ ! -d "$ROS2_SRC/realsense-ros" ]; then
+#     cd $ROS2_SRC
+#     git clone https://github.com/IntelRealSense/realsense-ros.git -b 4.51.1
+# else
+#     cd $ROS2_SRC/realsense-ros
+#     git checkout 4.51.1
+# fi
 
 PKG_URL=''
 if [[ -n "$GIT_USER" ]] && [[ -n "$GIT_TOKEN" ]]; then

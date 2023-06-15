@@ -206,6 +206,21 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_yolo_pose', 'True')
     )
 
+    run_arducam_stereo = LaunchConfiguration('run_arducam_stereo')
+    run_arducam_stereo_launch_arg = DeclareLaunchArgument(
+        'run_arducam_stereo',
+        default_value=os.environ.get('RUN_ARDUCAM_STEREO', 'False'),
+    )
+    arducam_stereo_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('arducam_ros2'),
+                'stereo.launch.py'
+            ])
+        ]),
+        condition=LaunchConfigurationEquals('run_arducam_stereo', 'True')
+    )
+
 
     # ld.add_action(run_rs_launch_arg)
     # ld.add_action(realsense_launch)
@@ -230,6 +245,9 @@ def generate_launch_description():
 
     ld.add_action(run_yolo_pose_launch_arg)
     ld.add_action(yolo2pose_launch)
+
+    ld.add_action(run_arducam_stereo_launch_arg)
+    ld.add_action(arducam_stereo_launch)
     
     ld.add_action(cam_tf_node)
     

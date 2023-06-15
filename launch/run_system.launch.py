@@ -205,22 +205,30 @@ def generate_launch_description():
     )
 
 
-    ld.add_action(run_rs_launch_arg)
-    ld.add_action(run_xrce_launch_arg)
-    ld.add_action(run_slam_launch_arg)
-    ld.add_action(run_px4_launch_arg)
-    ld.add_action(run_kf_launch_arg)
-    ld.add_action(run_traj_pred_launch_arg)
-    ld.add_action(run_yolo_launch_arg)
-    ld.add_action(run_yolo_pose_launch_arg)
-    ld.add_action(realsense_launch)
-    ld.add_action(cam_tf_node)
-    ld.add_action(xrce_agent_launch)
-    ld.add_action(kf_launch)
-    ld.add_action(predictor_launch)
-    ld.add_action(yolov8_launch)
-    ld.add_action(yolo2pose_launch)
-    ld.add_action(px4_ros_launch)
-    ld.add_action(slam_launch)
+    # ld.add_action(run_rs_launch_arg)
+    # ld.add_action(realsense_launch)
 
+    # ld.add_action(run_slam_launch_arg)
+    # ld.add_action(slam_launch)
+
+    ld.add_action(run_xrce_launch_arg)
+    ld.add_action(xrce_agent_launch)
+
+    ld.add_action(run_px4_launch_arg)
+    ld.add_action(px4_ros_launch)
+
+    ld.add_action(run_kf_launch_arg)
+    ld.add_action(kf_launch)
+
+    ld.add_action(run_traj_pred_launch_arg)
+    ld.add_action(predictor_launch)
+
+    ld.add_action(run_yolo_launch_arg)
+    ld.add_action(yolov8_launch)
+
+    ld.add_action(run_yolo_pose_launch_arg)
+    ld.add_action(yolo2pose_launch)
+    
+    ld.add_action(cam_tf_node)
+    
     return ld

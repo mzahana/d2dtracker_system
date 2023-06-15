@@ -39,6 +39,7 @@ def generate_launch_description():
     )
 
     # Realsense
+    # NOTE This will be rnu seprately, in a different launch file
     run_rs = LaunchConfiguration('run_rs')
     run_rs_launch_arg = DeclareLaunchArgument(
         'run_rs',
@@ -56,6 +57,7 @@ def generate_launch_description():
     )
 
     # isaac_visual_slam + realsense
+    # NOTE This will be rnu seprately, in a different launch file
     run_slam = LaunchConfiguration('run_slam')
     run_slam_launch_arg = DeclareLaunchArgument(
         'run_slam',

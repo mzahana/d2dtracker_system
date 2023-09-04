@@ -39,7 +39,6 @@ def generate_launch_description():
     )
 
     # Realsense
-    # NOTE This will be rnu seprately, in a different launch file
     run_rs = LaunchConfiguration('run_rs')
     run_rs_launch_arg = DeclareLaunchArgument(
         'run_rs',
@@ -58,19 +57,42 @@ def generate_launch_description():
 
     # isaac_visual_slam + realsense
     # NOTE This will be rnu seprately, in a different launch file
-    run_slam = LaunchConfiguration('run_slam')
-    run_slam_launch_arg = DeclareLaunchArgument(
-        'run_slam',
-        default_value=os.environ.get('RUN_SLAM', 'False'),
+    # run_slam = LaunchConfiguration('run_slam')
+    # run_slam_launch_arg = DeclareLaunchArgument(
+    #     'run_slam',
+    #     default_value=os.environ.get('RUN_SLAM', 'False'),
+    # )
+    # slam_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         PathJoinSubstitution([
+    #             FindPackageShare('d2dtracker_system'),
+    #             'slam_realsense.launch.py'
+    #         ])
+    #     ]),
+    #     condition=LaunchConfigurationEquals('run_slam', 'True')
+    # )
+
+    run_vins = LaunchConfiguration('run_vins')
+    run_vins_launch_arg = DeclareLaunchArgument(
+        'run_vins',
+        default_value=os.environ.get('RUN_OPENVINS', 'False'),
     )
-    slam_launch = IncludeLaunchDescription(
+    vins_config = LaunchConfiguration('vins_config')
+    vins_config_launch_arg = DeclareLaunchArgument(
+        'vins_config',
+        default_value='/home/d2d/shared_volume/ros2_ws/src/open_vins/config/d455_custom/estimator_config.yaml',
+    )
+    vins_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
-                FindPackageShare('d2dtracker_system'),
-                'slam_realsense.launch.py'
+                FindPackageShare('ov_msckf'),
+                'subscribe.launch.py'
             ])
         ]),
-        condition=LaunchConfigurationEquals('run_slam', 'True')
+        launch_arguments={
+            'config_path': vins_config
+        }.items(),
+        condition=LaunchConfigurationEquals('run_vins', 'True')
     )
 
     
@@ -222,11 +244,16 @@ def generate_launch_description():
     )
 
 
-    # ld.add_action(run_rs_launch_arg)
-    # ld.add_action(realsense_launch)
+    ld.add_action(run_rs_launch_arg)
+    ld.add_action(realsense_launch)
 
+    ##This is for isaac_ros_visual_slam (NOT USED)
     # ld.add_action(run_slam_launch_arg)
     # ld.add_action(slam_launch)
+
+    ld.add_action(vins_config_launch_arg)
+    ld.add_action(run_vins_launch_arg)
+    ld.add_action(vins_launch)
 
     ld.add_action(run_xrce_launch_arg)
     ld.add_action(xrce_agent_launch)

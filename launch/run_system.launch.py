@@ -86,7 +86,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
                 FindPackageShare('ov_msckf'),
-                'subscribe.launch.py'
+                'launch/subscribe.launch.py'
             ])
         ]),
         launch_arguments={

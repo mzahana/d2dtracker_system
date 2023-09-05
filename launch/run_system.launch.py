@@ -21,7 +21,7 @@ def generate_launch_description():
     run_xrce = LaunchConfiguration('run_xrce')
     run_xrce_launch_arg = DeclareLaunchArgument(
         'run_xrce',
-        default_value=os.environ.get('RUN_XRCE', 'True'),
+        default_value=os.environ.get('RUN_XRCE', 'False'),
     )
     xrce_agent_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -42,7 +42,7 @@ def generate_launch_description():
     run_rs = LaunchConfiguration('run_rs')
     run_rs_launch_arg = DeclareLaunchArgument(
         'run_rs',
-        default_value=os.environ.get('RUN_REALSENSE', 'True'),
+        default_value=os.environ.get('RUN_REALSENSE', 'False'),
     )
     
     realsense_launch = IncludeLaunchDescription(
@@ -99,7 +99,7 @@ def generate_launch_description():
     run_px4_ros = LaunchConfiguration('run_px4_ros')
     run_px4_launch_arg = DeclareLaunchArgument(
         'run_px4_ros',
-        default_value=os.environ.get('RUN_PX4_ROS', 'True'),
+        default_value=os.environ.get('RUN_PX4_ROS', 'False'),
     )
     px4_ros_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -140,7 +140,7 @@ def generate_launch_description():
     run_kf = LaunchConfiguration('run_kf')
     run_kf_launch_arg = DeclareLaunchArgument(
         'run_kf',
-        default_value=os.environ.get('RUN_KF', 'True'),
+        default_value=os.environ.get('RUN_KF', 'False'),
     )
     kf_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -160,7 +160,7 @@ def generate_launch_description():
     run_traj_pred = LaunchConfiguration('run_traj_pred')
     run_traj_pred_launch_arg = DeclareLaunchArgument(
         'run_traj_pred',
-        default_value=os.environ.get('RUN_TRAJ_PRED', 'True'),
+        default_value=os.environ.get('RUN_TRAJ_PRED', 'False'),
     )
     predictor_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -181,7 +181,7 @@ def generate_launch_description():
     run_yolo = LaunchConfiguration('run_yolo')
     run_yolo_launch_arg = DeclareLaunchArgument(
         'run_yolo',
-        default_value=os.environ.get('RUN_YOLO', 'True'),
+        default_value=os.environ.get('RUN_YOLO', 'False'),
     )
     package_name = 'd2dtracker_drone_detector'
     file_name = 'drone_detection_v3.pt'
@@ -207,7 +207,7 @@ def generate_launch_description():
     run_yolo_pose = LaunchConfiguration('run_yolo_pose')
     run_yolo_pose_launch_arg = DeclareLaunchArgument(
         'run_yolo_pose',
-        default_value=os.environ.get('RUN_YOLO_POSE', 'True'),
+        default_value=os.environ.get('RUN_YOLO_POSE', 'False'),
     )
     yolo2pose_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -241,6 +241,40 @@ def generate_launch_description():
             ])
         ]),
         condition=LaunchConfigurationEquals('run_arducam_stereo', 'True')
+    )
+
+    # MAVROS
+    run_mavros = LaunchConfiguration('run_mavros')
+    run_mavros_launch_arg = DeclareLaunchArgument(
+        'run_mavros',
+        default_value=os.environ.get('RUN_MAVROS', 'False'),
+    )
+    
+    mavros_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('d2dtracker_system'),
+                'mavros.launch.py'
+            ])
+        ]),
+        condition=LaunchConfigurationEquals('run_mavros', 'True')
+    )
+
+    # Static TFs required by MAVROS to fuse visual odometry
+    run_mavros_tfs = LaunchConfiguration('run_mavros_tfs')
+    run_mavros_tfs_launch_arg = DeclareLaunchArgument(
+        'run_mavros_tfs',
+        default_value=os.environ.get('RUN_MAVROS_TFS', 'False'),
+    )
+    
+    mavros_tfs_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('d2dtracker_system'),
+                'mavros_static_tfs.launch.py'
+            ])
+        ]),
+        condition=LaunchConfigurationEquals('run_mavros_tfs', 'True')
     )
 
 
@@ -277,5 +311,11 @@ def generate_launch_description():
     ld.add_action(arducam_stereo_launch)
     
     ld.add_action(cam_tf_node)
+
+    ld.add_action(run_mavros_launch_arg)
+    ld.add_action(mavros_launch)
+
+    ld.add_action(run_mavros_tfs_launch_arg)
+    ld.add_action(mavros_tfs_launch)
     
     return ld

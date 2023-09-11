@@ -2,7 +2,7 @@
 
 from launch import LaunchDescription
 from launch_ros.actions import Node
-
+from math import radians
 
 
 def generate_launch_description():
@@ -23,11 +23,17 @@ def generate_launch_description():
         arguments=['0', '0', '0', '0', '0', '0', 'global', 'odom'],
     )
 
+    x = 0.0
+    y = -0.09
+    z = 0.0
+    yaw = radians(-90.0)
+    pitch = 0.0
+    roll = radians(-90.0)
     imu2baselink_tf_node = Node(
         package='tf2_ros',
         name='imu2baselink_tf',
         executable='static_transform_publisher',
-        arguments=['0', '0', '0', '0', '0', '0', 'imu', 'base_link'],
+        arguments=[str(x), str(y), str(z), str(yaw), str(pitch), str(roll), 'imu', 'base_link'],
     )
 
     topic_relay_node = Node(

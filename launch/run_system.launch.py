@@ -190,8 +190,8 @@ def generate_launch_description():
     yolov8_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
-                FindPackageShare('yolov8_bringup'),
-                'launch/yolov8.launch.py'
+                FindPackageShare('d2dtracker_system'),
+                'yolov8.launch.py'
             ])
         ]),
         launch_arguments={
@@ -257,6 +257,10 @@ def generate_launch_description():
                 'mavros.launch.py'
             ])
         ]),
+        launch_arguments={
+            'fcu_url': '/dev/ttyUSB0:921600',
+            'gcs_url':'udp://:14550@192.168.1.151:14550'
+        }.items(),
         condition=LaunchConfigurationEquals('run_mavros', 'True')
     )
 

@@ -18,7 +18,7 @@ def generate_launch_description():
     pluginlists_yaml = LaunchConfiguration('pluginlists_yaml')
     config_yaml = LaunchConfiguration('config_yaml')
     fcu_protocol = LaunchConfiguration('fcu_protocol')
-    namespace = LaunchConfiguration('namespace')
+    mavros_namespace = LaunchConfiguration('mavros_namespace')
 
     fcu_url_arg = DeclareLaunchArgument(
         'fcu_url',
@@ -69,14 +69,14 @@ def generate_launch_description():
         description="MAVLink version"
     )
     namespace_arg = DeclareLaunchArgument(
-        'namespace',
+        'mavros_namespace',
         default_value='mavros',
         description="Node namespace"
     )
 
     # MAVROS node
     mavros_node = Node(
-        namespace=namespace,
+        namespace=mavros_namespace,
         package='mavros',
         executable='mavros_node',
         parameters=[{

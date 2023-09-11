@@ -24,11 +24,11 @@ def generate_launch_description():
     )
 
     x = 0.0
-    y = -0.09
-    z = 0.0
-    yaw = radians(-90.0)
-    pitch = 0.0
-    roll = radians(-90.0)
+    y = 0.0
+    z = -0.09
+    yaw = 0.0
+    pitch = radians(-90.0)
+    roll = radians(90.0)
     imu2baselink_tf_node = Node(
         package='tf2_ros',
         name='imu2baselink_tf',

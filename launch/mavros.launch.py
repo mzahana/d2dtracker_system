@@ -22,8 +22,8 @@ def generate_launch_description():
 
     fcu_url_arg = DeclareLaunchArgument(
         'fcu_url',
-        default_value='/dev/ttyACM0:57600',
-        description="FCU interface Example /dev/ttyACM0:57600"
+        default_value='udp://:14540@127.0.0.1:14557',
+        description="FCU interface Example /dev/ttyACM0:57600 OR udp://:14540@127.0.0.1:14557"
     )
     gcs_url_arg = DeclareLaunchArgument(
         'gcs_url',
@@ -79,15 +79,15 @@ def generate_launch_description():
         namespace=mavros_namespace,
         package='mavros',
         executable='mavros_node',
-        parameters=[{
-                'fcu_url': fcu_url,
-                'gcs_url': gcs_url,
-                'tgt_system': tgt_system,
-                'tgt_component': tgt_component,
-                'fcu_protocol': fcu_protocol,
-                'config_yaml': config_yaml,
-                'pluginlists_yaml': pluginlists_yaml, 
-        }]
+        parameters=[
+                {'fcu_url': fcu_url},
+                {'gcs_url': gcs_url},
+                {'tgt_system': tgt_system},
+                {'tgt_component': tgt_component},
+                {'fcu_protocol': fcu_protocol},
+                LaunchConfiguration('pluginlists_yaml'),
+                LaunchConfiguration('config_yaml')
+        ]
     )
 
     ld.add_action(fcu_url_arg)

@@ -155,13 +155,16 @@ cd $ROS2_SRC/trajectory_prediction && . setup.sh
 
 #
 # yolov8
+# compatible with Ultralytics version  8.0.162
 #
 if [ ! -d "$ROS2_SRC/yolov8_ros" ]; then
     cd $ROS2_SRC
     git clone https://github.com/mgonzs13/yolov8_ros.git
+    cd cd $ROS2_SRC/yolov8_ros && git checkout 2.0.1
 else
-    cd $ROS2_SRC/yolov8_ros && git pull origin main
+    cd $ROS2_SRC/yolov8_ros && git pull origin && git checkout 2.0.1
 fi
+
 # cd $ROS2_WS && rosdep init && rosdep install --from-paths src --ignore-src -r -y
 
 #

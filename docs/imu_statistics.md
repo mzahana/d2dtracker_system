@@ -4,6 +4,9 @@ Example of VIO: [open_vins](https://github.com/rpng/open_vins) which is used in 
 
 The following section shows instrucitons on how to do obtain IMU statistics using `allan_ros2` package. This is only used in ROS2.
 
+# Recording a ros2 bag
+You will need to record a ros2 bag with the imu topic of message type `sensor_msgs/Imu`. To get good statistics, record for a few hours (>= 5 hours) while the IMU is static in this period.
+
 # allan_ros2
 The original repo acn be found [here](https://github.com/CruxDevStuff/allan_ros2) which works  on ROS2 Foxy, and not humble.
 To use it with ROS2 humble, you can use [this fork](https://github.com/nikola-j/allan_ros2/tree/humble).

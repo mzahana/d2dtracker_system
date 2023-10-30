@@ -28,6 +28,13 @@ pip3 install rosbags>=0.9.12 # might need -U
 rosbags-convert <ros2_bag_folder> --dst calib_01.bag --exclude-topic <non_img_and_imu_topics>
 ```
 
+
+**NOTES**
+1. Avoid fast motion during recording your ros bag
+2. Make sure the apriltags are visible in your cameras and cover your camera frames
+3. Make sure to excite all IMU axes during your recording
+4. Adequate ros bag duration is between 30-60 seconds
+
 # Camera Calibration
 Reference: see [here](https://github.com/ethz-asl/kalibr/wiki/multiple-camera-calibration).
 

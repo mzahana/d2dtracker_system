@@ -3,9 +3,9 @@ VIO or VI-SLAM systems require cameras and IMUs to be calibrated. This is basica
 [Kalibr](https://github.com/ethz-asl/kalibr) is a powerful tool to do this task. The doument exokains this process.
 
 # Calibration target
-You need a claibration target to calibrate your cameras. Use an apriltag target on A0 paper. Informaion on calibration targets can be found [here](https://github.com/ethz-asl/kalibr/wiki/calibration-targets).
+You need a claibration target to calibrate your cameras. Use an apriltag target printed on A0 paper. Information on calibration targets can be found [here](https://github.com/ethz-asl/kalibr/wiki/calibration-targets).
 
-You also need to prepare a `yaml` file for the calibration target. It should like something like this.
+You also need to prepare a `yaml` file for the calibration target. It should look like this.
 `apriltag_6x6.yaml`
 ```bash
 target_type: 'aprilgrid' #gridtype
@@ -17,10 +17,10 @@ tagSpacing: 0.3          #ratio of space between tags to tagSize
 ```
 
 # Recording ROS bag
-First you need to record a ros bag the contains your camera topics and IMU topics. For example, if you are using the Intel Realsense D455 or D435i cameras, you need to record the two infra image topics and the imu topic. Image topics frame rate can be around 30Hz. IMU rate should be around 200Hz or more.
+First you need to record a ros bag that contains your camera topics and IMU topics. For example, if you are using the Intel Realsense D455 or D435i cameras, you need to record the two infra image topics and the imu topic. Image topics frame rate can be around 30Hz. IMU rate should be around 200Hz or more.
 
 If you recrod a ROS 2 bag, you will need to convert it to ROS 1 so Kalibr can process it.
-You need the `rosbags` package.
+For that you need the `rosbags` package.
 
 Convert the ROS2 folder (contains the database and metadata file) into the ROS1 bag file. If you recorded other non-image IMU topics (or non-standard message types) use --exclude-topic to not convert them. 
 ```bash
@@ -42,7 +42,7 @@ Video: see [here](https://www.youtube.com/watch?v=BtzmsuJemgI&t=600s).
 
 Once you have the ROS 1 bag, you can use Kalibr toolbox to calibrate your cameras and compute their intrinsics.
 
-It is recommende to use the Kalibr Docker image to speed up this process and avoiding wasting time on the manual setup process.
+It is recommende to use the Kalibr Docker image to speed up this process and avoid wasting time on the manual setup process.
 
 Clone the Kalibr repository, and build the docker image
 ```bash
@@ -51,7 +51,7 @@ cd kalibr
 docker build -t kalibr -f Dockerfile_ros1_20_04 . # change this to whatever ubuntu version you want
 ```
 
-We can now mount the data folder in the container /data path and enter the command prompt. 
+Mount the data folder in the container `/data` path and enter the command prompt. 
 ```bash
 FOLDER=/path/to/your/data/on/host
 xhost +local:root
@@ -80,7 +80,7 @@ Video: See [here](https://www.youtube.com/watch?v=BtzmsuJemgI&t=1653s).
 
 This step requires the `imu.yaml` file that you obtain from the IMU [statistics step](imu_statistics.md), and the camchain yaml file `camchain-%BAGNAME%.yaml` obtained in the previous step (camera calibration).
 
-**NOTE** It is also goof to inflate the IMU statistics in the `imu.yaml`. Multiply the white noises by 5, and the random walks by 10, before you use it in the next step.
+**NOTE** It is also good to inflate the IMU statistics in the `imu.yaml`. Multiply the white noises by 5, and the random walks by 10, before you use it in the next step. This is just to be a little consrvative about your IMU statstics.
 
 Inside the Kalibr docker container, execute the calibration command as follows.
 ```bash

@@ -18,7 +18,7 @@ def generate_launch_description():
 
     global2odom_tf_node = Node(
         package='tf2_ros',
-        name='map2global_tf',
+        name='global2odom_tf',
         executable='static_transform_publisher',
         arguments=['0', '0', '0', '0', '0', '0', 'global', 'odom'],
     )

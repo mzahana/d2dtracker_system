@@ -244,6 +244,8 @@ def generate_launch_description():
     )
 
     # MAVROS
+    # 'fcu_url': 'udp://:14540@192.168.0.4:14540' for ethernet connection  (Pixhawk 6X)
+    # 'gcs_url':'udp://:14550@192.168.1.79:14550'
     run_mavros = LaunchConfiguration('run_mavros')
     run_mavros_launch_arg = DeclareLaunchArgument(
         'run_mavros',
@@ -259,7 +261,8 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'fcu_url': '/dev/ttyUSB0:921600',
-            'gcs_url':'udp://:14550@192.168.1.151:14550'
+            'gcs_url':'udp://:14550@192.168.1.151:14550',
+            'pluginlists_yaml': '/home/d2d/shared_volume/ros2_ws/src/d2dtracker_system/config/px4_pluginlists.yaml'
         }.items(),
         condition=LaunchConfigurationEquals('run_mavros', 'True')
     )

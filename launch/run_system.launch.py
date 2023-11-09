@@ -96,6 +96,7 @@ def generate_launch_description():
     )
 
     
+    # px4_ros_com (not needed)
     run_px4_ros = LaunchConfiguration('run_px4_ros')
     run_px4_launch_arg = DeclareLaunchArgument(
         'run_px4_ros',
@@ -228,6 +229,7 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_yolo_pose', 'True')
     )
 
+    # Arducam stereo
     run_arducam_stereo = LaunchConfiguration('run_arducam_stereo')
     run_arducam_stereo_launch_arg = DeclareLaunchArgument(
         'run_arducam_stereo',

@@ -18,25 +18,25 @@ def generate_launch_description():
 
 
     # MicroXRCEAgent
-    run_xrce = LaunchConfiguration('run_xrce')
-    run_xrce_launch_arg = DeclareLaunchArgument(
-        'run_xrce',
-        default_value=os.environ.get('RUN_XRCE', 'False'),
-    )
-    xrce_agent_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('d2dtracker_system'),
-                'xrce_agent.launch.py'
-            ])
-        ]),
-        launch_arguments={
-            'interface': 'serial',
-            'device': '/dev/ttyUSB0',
-            'baud': '921600'
-        }.items(),
-        condition=LaunchConfigurationEquals('run_xrce', 'True')
-    )
+    # run_xrce = LaunchConfiguration('run_xrce')
+    # run_xrce_launch_arg = DeclareLaunchArgument(
+    #     'run_xrce',
+    #     default_value=os.environ.get('RUN_XRCE', 'False'),
+    # )
+    # xrce_agent_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         PathJoinSubstitution([
+    #             FindPackageShare('d2dtracker_system'),
+    #             'xrce_agent.launch.py'
+    #         ])
+    #     ]),
+    #     launch_arguments={
+    #         'interface': 'serial',
+    #         'device': '/dev/ttyUSB0',
+    #         'baud': '921600'
+    #     }.items(),
+    #     condition=LaunchConfigurationEquals('run_xrce', 'True')
+    # )
 
     # Realsense
     run_rs = LaunchConfiguration('run_rs')
@@ -54,23 +54,6 @@ def generate_launch_description():
         ]),
         condition=LaunchConfigurationEquals('run_rs', 'True')
     )
-
-    # isaac_visual_slam + realsense
-    # NOTE This will be rnu seprately, in a different launch file
-    # run_slam = LaunchConfiguration('run_slam')
-    # run_slam_launch_arg = DeclareLaunchArgument(
-    #     'run_slam',
-    #     default_value=os.environ.get('RUN_SLAM', 'False'),
-    # )
-    # slam_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource([
-    #         PathJoinSubstitution([
-    #             FindPackageShare('d2dtracker_system'),
-    #             'slam_realsense.launch.py'
-    #         ])
-    #     ]),
-    #     condition=LaunchConfigurationEquals('run_slam', 'True')
-    # )
 
     run_vins = LaunchConfiguration('run_vins')
     run_vins_launch_arg = DeclareLaunchArgument(
@@ -90,35 +73,11 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'config_path': vins_config
+            'config_path': os.environ.get('OPENVINS_YAML', '')
         }.items(),
         condition=LaunchConfigurationEquals('run_vins', 'True')
     )
 
-    
-    # px4_ros_com (not needed)
-    run_px4_ros = LaunchConfiguration('run_px4_ros')
-    run_px4_launch_arg = DeclareLaunchArgument(
-        'run_px4_ros',
-        default_value=os.environ.get('RUN_PX4_ROS', 'False'),
-    )
-    px4_ros_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('px4_ros_com'),
-                'launch/px4_ros_tf.launch.py'
-            ])
-        ]),
-        launch_arguments={
-            'ns': '',
-            'odom_frame': 'odom',
-            'base_link' : 'px4_base_link',
-            'tf_period' : '0.02',
-            'publish_tf': 'True',
-            'vio_topic' : '/visual_slam/tracking/odometry'
-        }.items(),
-        condition=LaunchConfigurationEquals('run_px4_ros', 'True')
-    )
 
     # Static TF base_link -> depth_camera
     # .15 0 .25 0 0 1.5707
@@ -141,7 +100,7 @@ def generate_launch_description():
     run_kf = LaunchConfiguration('run_kf')
     run_kf_launch_arg = DeclareLaunchArgument(
         'run_kf',
-        default_value=os.environ.get('RUN_KF', 'False'),
+        default_value= os.environ.get('RUN_KF', 'False'),
     )
     kf_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -152,7 +111,8 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'detections_topic': 'yolo_detections_poses',
-            'kf_ns' : ''
+            'kf_ns' : '',
+            'kf_yaml': os.environ.get('KF_YAML', '')
         }.items(),
         condition=LaunchConfigurationEquals('run_kf', 'True')
     )
@@ -196,7 +156,7 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'model': file_path,
+            'model': os.environ.get('YOLOV8_MODEL_PATH', '') ,
             'threshold' : '0.5',
             'input_image_topic' : '/camera/color/image_raw',
             'device': 'cuda:0'
@@ -262,9 +222,9 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'fcu_url': '/dev/ttyUSB0:921600',
-            'gcs_url':'udp://:14550@192.168.1.151:14550',
-            'pluginlists_yaml': '/home/d2d/shared_volume/ros2_ws/src/d2dtracker_system/config/px4_pluginlists.yaml'
+            'fcu_url': os.environ.get('MAVROS_FCU_URL', ''),
+            'gcs_url':os.environ.get('MAVROS_GCS_URL', ''),
+            'pluginlists_yaml': os.environ.get('MAVROS_PLUGINLIST_YAML', '')
         }.items(),
         condition=LaunchConfigurationEquals('run_mavros', 'True')
     )
@@ -290,19 +250,12 @@ def generate_launch_description():
     ld.add_action(run_rs_launch_arg)
     ld.add_action(realsense_launch)
 
-    ##This is for isaac_ros_visual_slam (NOT USED)
-    # ld.add_action(run_slam_launch_arg)
-    # ld.add_action(slam_launch)
-
     ld.add_action(vins_config_launch_arg)
     ld.add_action(run_vins_launch_arg)
     ld.add_action(vins_launch)
 
-    ld.add_action(run_xrce_launch_arg)
-    ld.add_action(xrce_agent_launch)
-
-    ld.add_action(run_px4_launch_arg)
-    ld.add_action(px4_ros_launch)
+    # ld.add_action(run_xrce_launch_arg)
+    # ld.add_action(xrce_agent_launch)
 
     ld.add_action(run_kf_launch_arg)
     ld.add_action(kf_launch)

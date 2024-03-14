@@ -225,7 +225,7 @@ def generate_launch_description():
             'fcu_url': os.environ.get('MAVROS_FCU_URL', ''),
             'gcs_url':os.environ.get('MAVROS_GCS_URL', ''),
             'pluginlists_yaml': os.environ.get('MAVROS_PLUGINLIST_YAML', ''),
-            'tgt_system',os.environ.get('MAVLINK_ID', '1')
+            'tgt_system': os.environ.get('MAVLINK_ID', '1')
         }.items(),
         condition=LaunchConfigurationEquals('run_mavros', 'True')
     )

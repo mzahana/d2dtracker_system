@@ -38,7 +38,9 @@ def generate_launch_description():
     #     condition=LaunchConfigurationEquals('run_xrce', 'True')
     # )
 
+    #
     # Realsense
+    #
     run_rs = LaunchConfiguration('run_rs')
     run_rs_launch_arg = DeclareLaunchArgument(
         'run_rs',
@@ -55,6 +57,9 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_rs', 'True')
     )
 
+    #
+    # open_vins
+    #
     run_vins = LaunchConfiguration('run_vins')
     run_vins_launch_arg = DeclareLaunchArgument(
         'run_vins',
@@ -96,7 +101,9 @@ def generate_launch_description():
         
     )
 
+    #
     # Kalman filter
+    #
     run_kf = LaunchConfiguration('run_kf')
     run_kf_launch_arg = DeclareLaunchArgument(
         'run_kf',
@@ -117,7 +124,9 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_kf', 'True')
     )
 
+    #
     # Trajectory prediction
+    #
     run_traj_pred = LaunchConfiguration('run_traj_pred')
     run_traj_pred_launch_arg = DeclareLaunchArgument(
         'run_traj_pred',
@@ -138,7 +147,9 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_traj_pred', 'True')
     )
     
+    #
     # yolov8_ros
+    #
     run_yolo = LaunchConfiguration('run_yolo')
     run_yolo_launch_arg = DeclareLaunchArgument(
         'run_yolo',
@@ -164,7 +175,9 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_yolo', 'True')
     )
 
+    #
     # Yolo to pose node
+    #
     run_yolo_pose = LaunchConfiguration('run_yolo_pose')
     run_yolo_pose_launch_arg = DeclareLaunchArgument(
         'run_yolo_pose',
@@ -189,7 +202,9 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_yolo_pose', 'True')
     )
 
+    #
     # Arducam stereo
+    #
     run_arducam_stereo = LaunchConfiguration('run_arducam_stereo')
     run_arducam_stereo_launch_arg = DeclareLaunchArgument(
         'run_arducam_stereo',
@@ -205,7 +220,10 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_arducam_stereo', 'True')
     )
 
+    
+    #
     # MAVROS
+    #
     # 'fcu_url': 'udp://:14540@192.168.0.4:14540' for ethernet connection  (Pixhawk 6X)
     # 'gcs_url':'udp://:14550@192.168.1.79:14550'
     run_mavros = LaunchConfiguration('run_mavros')
@@ -247,6 +265,40 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_mavros_tfs', 'True')
     )
 
+    #
+    # apriltag_ros
+    #
+    run_apriltag = LaunchConfiguration('run_apriltag')
+    run_apriltag_launch_arg = DeclareLaunchArgument(
+        'run_apriltag',
+        default_value=os.environ.get('RUN_APRILTAG', 'False'),
+    )
+    apriltag_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('d2dtracker_system'),
+                'apriltag_ros.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'params_yaml': os.environ.get('APRILTAG_PARAMS_YAML', ''),
+            'tags_yaml': os.environ.get('APRILTAG_TAGS_YAML', '')
+        }.items(),
+        condition=LaunchConfigurationEquals('run_apriltag', 'True')
+    )
+    apriltag_tools_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('apriltag_tools_ros'),
+                'apriltag_detection_to_pose.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'reference_frame': os.environ.get('APRILTAG_PARENT_FRAME', '')
+        }.items(),
+        condition=LaunchConfigurationEquals('run_apriltag', 'True')
+    )
+
 
     ld.add_action(run_rs_launch_arg)
     ld.add_action(realsense_launch)
@@ -280,5 +332,8 @@ def generate_launch_description():
 
     ld.add_action(run_mavros_tfs_launch_arg)
     ld.add_action(mavros_tfs_launch)
+
+    ld.add_action(run_apriltag_launch_arg)
+    ld.add_action(apriltag_launch)
     
     return ld

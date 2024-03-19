@@ -1,0 +1,24 @@
+# params.yaml
+trajectory_predictor_node:
+  ros__parameters:
+    position_model_path: /home/d2d/shared_volume/ros2_ws/src/drone_path_predictor_ros/config/5000_gz_dataset/5000_pos_white_norm_256_5_0p5.pth
+    position_stats_file: /home/d2d/shared_volume/ros2_ws/src/drone_path_predictor_ros/config/5000_gz_dataset/pos_stats.npz
+    velocity_model_path: /home/d2d/shared_volume/ros2_ws/src/drone_path_predictor_ros/config/5000_gz_dataset/5000_vel_white_norm_256_5_0p5.pth
+    velocity_stats_file: /home/d2d/shared_volume/ros2_ws/src/drone_path_predictor_ros/config/5000_gz_dataset/vel_stats.npz
+    buffer_duration: 2.0
+    dt: 0.1
+    pos_input_length: 20
+    pos_output_length: 10
+    pos_hidden_dim: 256
+    pos_num_layers: 5
+    pos_dropout: 0.5
+
+    vel_input_length: 20
+    vel_output_length: 10
+    vel_hidden_dim: 256
+    vel_num_layers: 5
+    vel_dropout: 0.5
+
+    use_velocity_prediction: false
+    # false: use max norm.
+    use_whitening: true

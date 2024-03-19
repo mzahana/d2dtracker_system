@@ -299,6 +299,91 @@ def generate_launch_description():
         condition=LaunchConfigurationEquals('run_apriltag', 'True')
     )
 
+    #
+    # drone_path_predictor_ros
+    #
+    run_gru_path_predictor = LaunchConfiguration('run_gru_path_predictor')
+    run_gru_launch_arg = DeclareLaunchArgument(
+        'run_gru_path_predictor',
+        default_value=os.environ.get('RUN_GRU_PATH_PREDICTOR', 'False'),
+    )
+    drone_path_predictor_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('drone_path_predictor_ros'),
+                'launch/trajectory_predictor.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'param_file': os.environ.get('GRU_YAML_FILE', ''),
+            'pose_topic': '/kf/good_tracks_pose_array',
+            'path_topic': '/gru_predicted_path'
+        }.items(),
+        condition=LaunchConfigurationEquals('run_gru_path_predictor', 'True')
+    )
+
+    #
+    # trajectory_generation
+    #
+    run_mpc_traj_generation = LaunchConfiguration('run_mpc_traj_generation')
+    run_mpc_traj_generation_arg = DeclareLaunchArgument(
+        'run_mpc_traj_generation',
+        default_value=os.environ.get('RUN_MPC_TRAJ_GENERATION', 'False'),
+    )
+    mpc_traj_generation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('trajectory_generation'),
+                'launch/mpc_12state.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'yaml_path': os.environ.get('MPC_TRAJ_GEN_YAML_FILE', ''),
+            'mpc_odom_topic': '/mavros/local_position/odom',
+            'mpc_imu_topic': '/mavros/imu/data',
+            'mpc_ref_path_topic': '/gru_predicted_path',
+            'mpc_cmd_topic_arg': '/geometric_controller/multi_dof_setpoint'
+        }.items(),
+        condition=LaunchConfigurationEquals('run_mpc_traj_generation', 'True')
+    )
+
+    #
+    # geometric controller node
+    #
+    run_geometric_controller = LaunchConfiguration('run_geometric_controller')
+    run_geometric_controller_arg = DeclareLaunchArgument(
+        'run_geometric_controller',
+        default_value=os.environ.get('RUN_GEOMETRIC_CONTROLLER', 'False'),
+    )
+    geometric_controller_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('mav_controllers_ros'),
+                'launch/geometric_controller.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'yaml_path': os.environ.get('GEOMETRIC_CONTROLLER_YAML_FILE', '')
+            }.items(),
+        condition=LaunchConfigurationEquals('run_geometric_controller', 'True')
+    )
+
+    #
+    # Geometric controller mavros interface node
+    #
+    geometric_to_mavros_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('mav_controllers_ros'),
+                'launch/geometric_to_mavros.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'param_file': os.environ.get('GEOMETRIC_MAVROS_YAML_FILE', ''),
+            }.items(),
+        condition=LaunchConfigurationEquals('run_geometric_controller', 'True')
+    )
+
 
     ld.add_action(run_rs_launch_arg)
     ld.add_action(realsense_launch)
@@ -335,5 +420,16 @@ def generate_launch_description():
 
     ld.add_action(run_apriltag_launch_arg)
     ld.add_action(apriltag_launch)
+    ld.add_action(apriltag_tools_launch)
+
+    ld.add_action(run_gru_launch_arg)
+    ld.add_action(drone_path_predictor_launch)
+
+    ld.add_action(run_mpc_traj_generation_arg)
+    ld.add_action(mpc_traj_generation_launch)
+
+    ld.add_action(run_geometric_controller_arg)
+    ld.add_action(geometric_controller_launch)
+    ld.add_action(geometric_to_mavros_launch)
     
     return ld

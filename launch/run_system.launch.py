@@ -78,7 +78,8 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'config_path': os.environ.get('OPENVINS_YAML', '')
+            'config_path': os.environ.get('OPENVINS_YAML', ''),
+            'verbosity': 'WARNING' # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
         }.items(),
         condition=LaunchConfigurationEquals('run_vins', 'True')
     )

@@ -1,4 +1,4 @@
-/interceptor/geometric_controller_node:
+/geometric_controller_node:
   ros__parameters:
     mass: 2.0
     use_external_yaw: true

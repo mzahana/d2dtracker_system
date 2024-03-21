@@ -294,7 +294,9 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'reference_frame': os.environ.get('APRILTAG_PARENT_FRAME', '')
+            'reference_frame': os.environ.get('APRILTAG_PARENT_FRAME', ''),
+            'tag_detections_topic': '/tag_detections',
+            'output_posearray_topic': 'apriltags/pose_array'
         }.items(),
         condition=LaunchConfigurationEquals('run_apriltag', 'True')
     )
